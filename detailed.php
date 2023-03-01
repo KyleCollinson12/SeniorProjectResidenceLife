@@ -1,79 +1,63 @@
 <!--A.J. Kammerer, Kyle Collinson, CJ Glaze-->
 <!--Last edited by: A.J. Kammerer -->
 <!--Last Edited Date: 2/15/2023 -->
-<!--Connect and query with the SBU database and MySQL database 
-
+<!--Connect and query with the SBU database and MySQL database -->
 <!DOCTYPE html>
-
 <html lang="en">
   <head>
-    <title> SBU ResLife </title>
-    </head>
-    <body>
-    <div class = img> <!-#Picture of LEGENDARY SBU NFT#->
+    <title> SBU ResLife</title>
+  </head>
+  <style>
+		.home-button {
+			position: fixed;
+			top: 10px;
+			right: 10px;
+			padding: 10px;
+			background-color: #333;
+			color: #fff;
+			text-decoration: none;
+			font-weight: bold;
+			border-radius: 5px;
+		}
+	</style>
+  <body>
+  <a href="indexNumOne.php" class="home-button">Home</a>
+  <div class = img> <!--Picture of LEGENDARY SBU NFT-->
          <img src="sbu.png" width = "20%" alt ="SBU"/>
     </div>
-   
-    <div class = links>
-        <nav>
-            <ul>
-                <li><a href='../indexNumOne.php'>Starter</a></li>
-                <li><a href='BigEdit.php'>Big View</a></li><!-#Placeholder name#->
-                <li><a href='totalview.php'>Total View</a></li>
-            </ul>
-        </nav>
-    </div>
-<!-# Possible Nav option later, however we are flooded with dropdowns so I thought its a bit much 
-    <div class = dropdown> 
-        <label for="view">Select the View you would prefer:</label>
-        <form action = "detailed.php" method = "POST">
-        <select name="view" id="view">
-            <option value >View</option>
-            <option value=1 >Detailed</option>
-            <option value=2 >Sign in/Out</option>
-            <option value=3 >Total</option>
-        </select>     
-#->
     
-    <!-#The dropdown class contains the dorm and date selection and their vars#->
-    <div class = dropdown> 
-        <label for="dorm">Select Dorm, Date Range, and View:</label>
-        <form action = "detailed.php" method = "POST">
+    <div class="dropdown">
+      <form  action="detailed.php" method="POST">
+        
         <select name="dorm" id="dorm">
-            <option value >Dorm</option>
-            <option value=6 >Meyer</option>
-            <option value=7 >Plaster</option>
-            <option value=5 >Landen</option>
-            <option value=3 >Leslie</option>
-            <option value=2 >Beasley</option>
-            <option value=4 >Woody/Gott</option>
+          <option value>Dorm</option>
+          <option value="6">Meyer</option>
+          <option value="7">Plaster</option>
+          <option value="5">Landen</option>
+          <option value="3">Leslie</option>
+          <option value="2">Beasley</option>
+          <option value="4">Woody/Gott</option>
         </select>
-
-       
-        <label for="start"></label><!-#The Calendar Start Date #->
-        <input type="date" id="start" name="tripstart"
-            value="yyyy-mm-dd"
-            min="2022-01-01" max="2300-12-31"/>
-
-        <label for="start"></label><!-#The Calendar End Date#->
-        <input type="date" id="start" name="tripend"
-            value="yyyy-mm-dd"
-            min="2022-01-01" max="2100-12-31"/>
-       
-        <label for="missed">Choose for Missed or Checked-in</label>
-        <form action = "detailed.php" method = "POST">
         <select name="missed" id="missed">
-            <option value >Option</option>
-            <option value= 'Checked In'>Checked In</option>
-            <option value= 'Missed'>Missed</option>
-            <option value= 'Signed Out'>Signed Out</option>
-            <option value= 'Scanned After'>Scanned After</option>
+          <option value>No Filter</option>
+          <option value="Checked In">Checked In</option>
+          <option value="Missed">Missed</option>
+          <option value="Signed Out">Signed Out</option>
+          <option value="Scanned After">Scanned After</option>
         </select>
-
-    
-        <input type="submit">
-        </form>
-</div> -->
+        <label for="first_name">First Name:</label>
+        <input type="text" id="first_name" name="first_name" pattern="[A-Za-z'-]+" oninvalid="this.setCustomValidity('Please enter a valid first name')" oninput="this.setCustomValidity('')">
+        <label for="last_name">Last Name:</label>
+        <input type="text" id="last_name" name="last_name" pattern="[A-Za-z'-]+" oninvalid="this.setCustomValidity('Please enter a valid last name')" oninput="this.setCustomValidity('')">
+        <label for="start">Start Date:</label>
+        <input type="date" id="start" name="start_date" value="yyyy-mm-dd" min="2022-01-01" max="2100-12-31"/>
+        <label for="end">End Date:</label>
+        <input type="date" id="end" name="end_date" value="yyyy-mm-dd" min="2022-01-01" max="2100-12-31"/>
+        <input type="submit" value="Submit">
+      </form>
+    </div>
+  </body>
+</html>
    <!------------------------------------------------------------------------------------------------------------------->
 
 
@@ -140,29 +124,39 @@ $view = 0;
 $missed = 0;
 $first_name = "";
 $last_name = "";
+//This code checks if the "first_name" and "last_name" keys exist in the $_POST array before trying to access them, and sets default values for $first_name and $last_name if they do not exist.
+$first_name = isset($_POST['first_name']) ? $_POST['first_name'] : '';
+$last_name = isset($_POST['last_name']) ? $_POST['last_name'] : '';
+
+
+if (!empty($first_name) && !empty($last_name)) {
+    // Both first name and last name have been entered
+    if (!ctype_alpha($first_name) || !ctype_alpha($last_name)) {
+        // Invalid input: first and last name should only contain alphabet letters
+        $firstNameCheck = false; 
+        $lastNameCheck = false; 
+    } else {
+        // Valid input: first and last name only contain alphabet letters
+        $firstNameCheck = true;
+        $lastNameCheck = true;
+    }
+} else {
+    // One or both names are empty
+    $firstNameCheck = false;
+    $lastNameCheck = false;
+    
+}
 
 // Checks if value is set, so errors are not thrown when page loads
-if(isset($_POST['view'])){
-    $view = $_POST['view'];
-}
-if(isset($_POST['tripstart'])){
-    $tripstart = $_POST['tripstart'];
-}
-if(isset($_POST['dorm'])){
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // retrieve the selected options from the $_POST variable
     $dorm = $_POST['dorm'];
-}
-if(isset($_POST['tripend'])){
-    $tripend = $_POST['tripend'];
-}
-if(isset($_POST['missed'])){
+    $tripstart = $_POST['start_date'];
+    $tripend = $_POST['end_date'];
     $missed = $_POST['missed'];
-}
-if(isset($_POST['first_name'])){
     $first_name = $_POST['first_name'];
-}
-if(isset($_POST['last_name'])){
     $last_name = $_POST['last_name'];
-}
+}  
 //force the dorm and view string into an int and assign null at the start of the webpage
 $dorm = (int) $dorm;
 if($dorm == 0){
