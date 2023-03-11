@@ -46,9 +46,9 @@
           <option value="Scanned After">Scanned After</option>
         </select>
         <label for="first_name">First Name:</label>
-        <input type="text" id="first_name" name="first_name" pattern="[A-Za-z'-]+" oninvalid="this.setCustomValidity('Please enter a valid first name')" oninput="this.setCustomValidity('')">
+        <input type="text" id="first_name" name="first_name" pattern="[A-Za-z-`]+" oninvalid="this.setCustomValidity('Please enter a valid first name')" oninput="this.setCustomValidity('')">
         <label for="last_name">Last Name:</label>
-        <input type="text" id="last_name" name="last_name" pattern="[A-Za-z'-]+" oninvalid="this.setCustomValidity('Please enter a valid last name')" oninput="this.setCustomValidity('')">
+        <input type="text" id="last_name" name="last_name" pattern="[A-Za-z-`]+" oninvalid="this.setCustomValidity('Please enter a valid last name')" oninput="this.setCustomValidity('')">
         <label for="start">Start Date:</label>
         <input type="date" id="start" name="start_date" value="yyyy-mm-dd" min="2022-01-01" max="2100-12-31"/>
         <label for="end">End Date:</label>
@@ -120,10 +120,9 @@
 $dorm = 0;  
 $tripstart = 0; 
 $tripend = 0;
-$view = 0;
 $missed = 0;
-$first_name = "";
-$last_name = "";
+$first_name = '';
+$last_name = '';
 //This code checks if the "first_name" and "last_name" keys exist in the $_POST array before trying to access them, and sets default values for $first_name and $last_name if they do not exist.
 $first_name = isset($_POST['first_name']) ? $_POST['first_name'] : '';
 $last_name = isset($_POST['last_name']) ? $_POST['last_name'] : '';
@@ -148,7 +147,7 @@ if (!empty($first_name) && !empty($last_name)) {
 }
 
 // Checks if value is set, so errors are not thrown when page loads
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && $firstNameCheck = true && $lastNameCheck= true ) {
     // retrieve the selected options from the $_POST variable
     $dorm = $_POST['dorm'];
     $tripstart = $_POST['start_date'];
@@ -162,10 +161,7 @@ $dorm = (int) $dorm;
 if($dorm == 0){
     $dorm = NULL;
 }
-$view = (int) $view;
-if($view == 0){
-    $view = NULL;
-}
+
 
 
 
@@ -192,7 +188,7 @@ $conn = mysqli_connect('localhost', $user, $pass, $db) or die ("unable to connec
 $missedNull = is_null($missed);
 $checkFirstName = empty($first_name);
 $checkLastName = empty($last_name);
-if($missed == NULL && $first_name == "" && $last_name == ""){ // instance for when no filter and no names
+if($missed == NULL && $first_name == '' && $last_name == ''){ // instance for when no filter and no names
   
     if($tripend == NULL){
     // SBU Query for a single date
@@ -206,7 +202,7 @@ if($missed == NULL && $first_name == "" && $last_name == ""){ // instance for wh
         WHERE checkintracker.Dorm = '$dorm' 
         AND LEFT(checkintracker.Date, 10) BETWEEN '$tripstart' AND '$tripend'";
     }
-}elseif ($missedNull == false && $first_name == "" && $last_name == "") { // instance where the filter is inputted but no names
+}elseif ($missedNull == false && $first_name == '' && $last_name == '') { // instance where the filter is inputted but no names
    
     if($tripend == NULL){
         // SBU Query for a single date
@@ -259,7 +255,7 @@ if($missed == NULL && $first_name == "" && $last_name == ""){ // instance for wh
 $result = mysqli_query($conn, $sql);
 $studentData = mysqli_fetch_all($result, MYSQLI_ASSOC); //Fetches results and stores in variable 
 
-//set up and send another query to allow for the checking and changing of missed and checked in status
+/*THESE QUERY GOES IN THE SCRIPT FOR CHECKING THE STATUS OF A STUDENT set up and send another query to allow for the checking and changing of missed and checked in status
 $sql1 = "SELECT IDNum, RIGHT(Date,12), Status FROM checkintracker";
 $result1 = mysqli_query($conn, $sql1);
 $verify = mysqli_fetch_all($result1, MYSQLI_ASSOC);
@@ -294,7 +290,7 @@ foreach ($verify as $verify){
     //     echo "Error: ";S
     // }
 }
-
+*/
 
 //assigns dorms string based on how they are stored in SBU Database
 if($dorm == 2){

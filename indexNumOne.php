@@ -78,6 +78,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
          case 'sign-out':
           
             include 'signout.php';
+            header("Location: signout.php");
+            exit();
             break;
         case 'inperson-checkin':
           
