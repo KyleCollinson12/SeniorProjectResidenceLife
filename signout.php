@@ -117,32 +117,38 @@
 
   
 //takes user inputted results and updates the database
-  foreach ($selected_people as $person) {
-    
+foreach ($selected_people as $person) {
 
-// Get the StudentID from the oncurfew table using the selected first and last name
-$name_parts = explode(" ", $person);
-$first_name = $name_parts[0];
-$last_name = $name_parts[1];
-$sql = "SELECT StudentID FROM oncurfew WHERE FName='$first_name' AND LName='$last_name'";
-$result = mysqli_query($conn, $sql);
-$row = mysqli_fetch_assoc($result);
-$student_id = $row['StudentID'];
+  // Get the StudentID from the oncurfew table using the selected first and last name
+  $name_parts = explode(" ", $person);
+  $first_name = $name_parts[0];
+  $last_name = $name_parts[1];
+  $sql = "SELECT StudentID FROM oncurfew WHERE FName='$first_name' AND LName='$last_name'";
+  $result = mysqli_query($conn, $sql);
+  $row = mysqli_fetch_assoc($result);
+  $student_id = $row['StudentID'];
 
-// Update the status column in the checkintracker table for each selected person and date
-foreach ($date_range as $date) {
- 
-  $sql = "UPDATE checkintracker SET Status='Signed Out' WHERE StudentID='$student_id' AND DATE(Date)='$date'";
-
-  mysqli_query($conn, $sql);
-}
-
-// Insert a new row into the soinprsn table for each selected person and date
-foreach ($date_range as $date) {
-  $datetime = "$date 21:00:00.000";
-  $sql = "INSERT INTO soinprsn (StudentID, Date, InPerson, SignedOut) VALUES ('$student_id', '$datetime', '0' ,'1')";
-  mysqli_query($conn, $sql);
-}
+  // Check if a row with the same StudentID and Date already exists in the soinprsn table
+  $inserted_row = false;
+  foreach ($date_range as $date) {
+      $sql = "SELECT * FROM soinprsn WHERE StudentID='$student_id' AND DATE(Date)='$date'";
+      $result = mysqli_query($conn, $sql);
+      if (mysqli_num_rows($result) == 0) {
+          // Insert a new row into the soinprsn table if one doesn't already exist
+          $datetime = "$date 21:00:00.000";
+          $sql = "INSERT INTO soinprsn (StudentID, Date, InPerson, SignedOut) VALUES ('$student_id', '$datetime', '0' ,'1')";
+          mysqli_query($conn, $sql);
+          $inserted_row = true;
+          // Update the status column in the checkintracker table if a new row was inserted
+          $sql = "UPDATE checkintracker SET Status='Signed Out' WHERE StudentID='$student_id' AND DATE(Date)='$date'";
+          mysqli_query($conn, $sql);
+      }
+  }
+  // If no rows were inserted for this person, move on to the next name
+  if (!$inserted_row) {
+      echo "This date already exists in the database for this person OR you cannot enter a start date that is after the end date.";
+      continue;
+  }
 }
 ?>
   </body>

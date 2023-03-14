@@ -76,14 +76,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" ) {
          exit();
         break;
          case 'sign-out':
-          
-            include 'signout.php';
+           include 'signout.php';
             header("Location: signout.php");
             exit();
             break;
         case 'inperson-checkin':
-          
-            include 'inperson.php';
+           include 'inperson.php';
+           header("Location: inperson.php");
+            exit();
             break;
         case 'edit':
            
